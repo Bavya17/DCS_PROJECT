@@ -1,13 +1,19 @@
 """
-Replicate Figure 4 from the paper:
+02_plot_rate_distortion_curves_fig4.py: Rate-Distortion & Quality Metrics (Figure 4)
+=====================================================================================
+Replicates Figure 4 from ICMLCN 2024:
 'Figure 4: Comparison of the introduced DeepJSCC-WZ method with the baselines
 on the KITTIStereo and Cityscape datasets for BRs rho in {1/16; 1/32}.'
 
-Generates the complete 6-panel grid comparing PSNR, MS-SSIM, and LPIPS
-across all test SNRs (-5 dB to 5 dB) for all 5 models and 2 bandwidth ratios.
-Saves high-resolution publication-quality figures:
-- replication_output/figure_4_replicated.png (300 DPI)
-- replication_output/figure_4_replicated.pdf
+Plots all 6 subplots comparing PSNR, MS-SSIM, and LPIPS across all channel SNRs:
+- Datasets: Cityscape and KITTIStereo
+- Bandwidth ratios: rho = 1/16 (solid lines) and rho = 1/32 (dashed lines)
+- Evaluated schemes:
+  * DeepJSCC-Cond (Upper bound, green circle)
+  * DeepJSCC-WZ (Proposed Wyner-Ziv, orange square)
+  * DeepJSCC-WZ-sm (Proposed parameter-shared Wyner-Ziv, blue triangle)
+  * DeepJSCC (Point-to-point without side info, pink diamond)
+  * DeepNIC [10] + Capacity (Separation-based baseline, light green pentagon)
 """
 
 import os
@@ -104,15 +110,15 @@ def load_results_data(results_dir: str = "results"):
     return data
 
 
-def plot_figure_4(results_dir: str = "results", output_dir: str = "replication_output"):
+def plot_rate_distortion_curves_fig4(results_dir: str = "results", output_dir: str = "paper_evaluation_results"):
     os.makedirs(output_dir, exist_ok=True)
     data = load_results_data(results_dir)
 
-    print("=" * 75)
-    print("REPLICATING FIGURE 4: Baseline and DeepJSCC-WZ Curves across SNRs and BRs")
-    print("=" * 75)
+    print("=" * 85)
+    print("FIGURE 4: Plotting Performance Metric Curves across SNRs and Bandwidth Ratios")
+    print("=" * 85)
 
-    # Set up publication-style formatting
+    # IEEE style formatting
     plt.rcParams.update({
         "font.family": "serif",
         "font.size": 11,
@@ -202,7 +208,7 @@ def plot_figure_4(results_dir: str = "results", output_dir: str = "replication_o
             ax.set_xlim(-5.2, 5.2)
             ax.set_xticks([-4, -2, 0, 2, 4])
 
-            # Limits tailored to match paper
+            # Limits tailored to match paper exactly
             if dataset == "Cityscape":
                 if metric_key == "psnr":
                     ax.set_ylim(27.2, 38.0)
@@ -224,7 +230,7 @@ def plot_figure_4(results_dir: str = "results", output_dir: str = "replication_o
                     ax.set_ylim(0.14, 0.41)
                     ax.set_yticks([0.15, 0.20, 0.25, 0.30, 0.35, 0.40])
 
-    # Central Boxed Legend (identical layout to Figure 4 in paper)
+    # Central Legend Box
     legend_elements = [
         Line2D([0], [0], color=MODEL_CONFIGS["DeepJSCC-Cond"]["color"], lw=1.6, marker='o', label='DeepJSCC-Cond'),
         Line2D([0], [0], color=MODEL_CONFIGS["DeepJSCC-WZ"]["color"], lw=1.6, marker='s', label='DeepJSCC-WZ'),
@@ -247,16 +253,16 @@ def plot_figure_4(results_dir: str = "results", output_dir: str = "replication_o
         fontsize=10.5,
     )
 
-    out_png = os.path.join(output_dir, "figure_4_replicated.png")
-    out_pdf = os.path.join(output_dir, "figure_4_replicated.pdf")
+    out_png = os.path.join(output_dir, "fig4_performance_curves.png")
+    out_pdf = os.path.join(output_dir, "fig4_performance_curves.pdf")
     plt.savefig(out_png, dpi=300, bbox_inches="tight")
     plt.savefig(out_pdf, bbox_inches="tight")
     plt.close()
 
-    print(f"[Saved Replicated Figure 4 PNG] -> {out_png}")
-    print(f"[Saved Replicated Figure 4 PDF] -> {out_pdf}")
+    print(f"[Saved Figure 4 PNG (300 DPI)] -> {out_png}")
+    print(f"[Saved Figure 4 PDF (Vector)]  -> {out_pdf}")
     return out_png
 
 
 if __name__ == "__main__":
-    plot_figure_4()
+    plot_rate_distortion_curves_fig4()

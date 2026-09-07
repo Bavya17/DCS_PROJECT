@@ -1,10 +1,12 @@
 """
-Generate comprehensive tables of all values from the paper:
-- PSNR (dB), MS-SSIM, LPIPS across test SNRs in {-4, -2, 0, 2, 4} dB
+03_tabulate_performance_metrics.py: Compiles Numerical Evaluation Matrices
+===========================================================================
+Tabulates all numerical performance metrics from ICMLCN 2024 paper:
+- Metrics: PSNR (dB), MS-SSIM, LPIPS across test SNRs in {-4, -2, 0, 2, 4} dB
 - Both datasets: Cityscape and KITTIStereo
 - Both bandwidth ratios: rho in {1/16, 1/32}
-- All models: DeepJSCC, DeepJSCC-WZ-sm, DeepJSCC-WZ, DeepJSCC-Cond, DeepNIC [10] + Capacity
-- Saves to Markdown, CSV, and LaTeX formats in replication_output/tables/
+- All models: DeepJSCC-Cond, DeepJSCC-WZ, DeepJSCC-WZ-sm, DeepJSCC
+- Exports to Markdown, CSV, and LaTeX formats in paper_evaluation_results/tables/
 """
 
 import os
@@ -61,22 +63,21 @@ def load_all_data(results_dir: str = "results"):
     return pd.DataFrame(records)
 
 
-def generate_tables(results_dir: str = "results", output_dir: str = "replication_output/tables"):
+def tabulate_performance_metrics(results_dir: str = "results", output_dir: str = "paper_evaluation_results/tables"):
     os.makedirs(output_dir, exist_ok=True)
     df = load_all_data(results_dir)
 
     target_snrs = [-4.0, -2.0, 0.0, 2.0, 4.0]
     df_filtered = df[df["SNR_dB"].isin(target_snrs)].copy()
 
-    # Master Markdown file
-    master_md_path = os.path.join(output_dir, "all_paper_values.md")
-    master_csv_path = os.path.join(output_dir, "all_paper_values.csv")
+    master_md_path = os.path.join(output_dir, "performance_metrics_summary.md")
+    master_csv_path = os.path.join(output_dir, "performance_metrics_summary.csv")
 
     df_filtered.sort_values(["Dataset", "Bandwidth_Ratio", "Model", "SNR_dB"], inplace=True)
     df_filtered.to_csv(master_csv_path, index=False)
 
     print("=" * 85)
-    print("REPLICATING ALL NUMERICAL VALUES ACROSS SNRs (-4, -2, 0, 2, 4 dB)")
+    print("PERFORMANCE METRICS MATRIX ACROSS SNRs (-4, -2, 0, 2, 4 dB)")
     print("=" * 85)
 
     metrics = [
@@ -86,8 +87,8 @@ def generate_tables(results_dir: str = "results", output_dir: str = "replication
     ]
 
     with open(master_md_path, "w", encoding="utf-8") as f_md:
-        f_md.write("# Complete Numerical Values Replicated from DeepJSCC-WZ Paper\n\n")
-        f_md.write("This document compiles every evaluated test metric across all SNRs $\\in \\{-4, -2, 0, 2, 4\\}$ dB, bandwidth ratios $\\rho \\in \\{1/16, 1/32\\}$, and datasets (Cityscape & KITTIStereo).\n\n")
+        f_md.write("# Summary of Performance Metrics (DeepJSCC-WZ Paper)\n\n")
+        f_md.write("Comprehensive numerical comparison of evaluated distortion and perceptual metrics across test SNRs $\\in \\{-4, -2, 0, 2, 4\\}$ dB and bandwidth ratios $\\rho \\in \\{1/16, 1/32\\}$.\n\n")
 
         for metric_id, metric_title, col_mean, col_std, fmt_str in metrics:
             print(f"\n--- {metric_title} ---")
@@ -127,14 +128,14 @@ def generate_tables(results_dir: str = "results", output_dir: str = "replication
                     f_md.write("| " + " | ".join(str(cell) for cell in r) + " |\n")
                 f_md.write("\n")
 
-                # Save individual CSV table for each metric & dataset
-                csv_filename = os.path.join(output_dir, f"{dataset.lower()}_{metric_id.lower()}_table.csv")
+                # Individual CSV table for each metric & dataset
+                csv_filename = os.path.join(output_dir, f"{dataset.lower()}_{metric_id.lower()}_metrics.csv")
                 pd.DataFrame(table_rows, columns=headers).to_csv(csv_filename, index=False)
 
-    print(f"\n[Saved Complete Values Markdown] -> {master_md_path}")
-    print(f"[Saved Complete Values CSV]      -> {master_csv_path}")
+    print(f"\n[Saved Metrics Summary Markdown] -> {master_md_path}")
+    print(f"[Saved Metrics Summary CSV]      -> {master_csv_path}")
     return master_md_path
 
 
 if __name__ == "__main__":
-    generate_tables()
+    tabulate_performance_metrics()

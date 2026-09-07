@@ -1,6 +1,6 @@
-# Complete Numerical Values Replicated from DeepJSCC-WZ Paper
+# Summary of Performance Metrics (DeepJSCC-WZ Paper)
 
-This document compiles every evaluated test metric across all SNRs $\in \{-4, -2, 0, 2, 4\}$ dB, bandwidth ratios $\rho \in \{1/16, 1/32\}$, and datasets (Cityscape & KITTIStereo).
+Comprehensive numerical comparison of evaluated distortion and perceptual metrics across test SNRs $\in \{-4, -2, 0, 2, 4\}$ dB and bandwidth ratios $\rho \in \{1/16, 1/32\}$.
 
 ## PSNR (dB) ↑
 

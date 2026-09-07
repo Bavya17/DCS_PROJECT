@@ -1,5 +1,0 @@
-Method,rho = 1/16 (Computed),rho = 1/16 (Exact Params),rho = 1/16 (Paper),rho = 1/32 (Computed),rho = 1/32 (Exact Params),rho = 1/32 (Paper),Status
-DeepJSCC,31.6M,"31,612,059",31.6M,31.0M,"30,998,379",31.0M,✓ Match | ✓ Match
-DeepJSCC-WZ-sm,39.8M,"39,806,080",39.8M,38.6M,"38,643,760",38.6M,✓ Match | ✓ Match
-DeepJSCC-WZ,48.9M,"48,922,784",48.9M,47.4M,"47,412,032",47.4M,✓ Match | ✓ Match
-DeepJSCC-Cond,59.1M,"59,057,312",59.1M,57.4M,"57,423,680",57.4M,✓ Match | ✓ Match

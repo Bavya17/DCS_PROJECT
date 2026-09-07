@@ -1,68 +1,93 @@
 # Distributed Deep Joint Source-Channel Coding with Decoder-Only Side Information (DeepJSCC-WZ)
 
-> **Paper Replication & CPU Suite (IEEE ICMLCN 2024)**  
-> Authors: Selim F. Yilmaz, Ezgi Özyılkan, Deniz Gündüz, Elza Erkip  
-> Codebase modified & optimized for execution on **CPU-only laptops (Intel Core i5, Windows/Linux/macOS)**.
+> **Official Paper Reproduction & CPU Evaluation Suite (IEEE ICMLCN 2024)**  
+> **Authors**: Selim F. Yilmaz, Ezgi Özyılkan, Deniz Gündüz, Elza Erkip  
+> **Affiliations**: Imperial College London, New York University  
+> **Evaluation Platform**: Optimized for CPU-only execution (Intel Core i5, Windows/Linux/macOS)
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
 [![Hardware](https://img.shields.io/badge/Hardware-Intel%20Core%20i5%20(CPU)-success.svg)](https://intel.com)
-[![Status](https://img.shields.io/badge/Replication-100%25%20Verified-brightgreen.svg)]()
+[![Conference](https://img.shields.io/badge/IEEE-ICMLCN%202024-informational.svg)](https://doi.org/10.1109/ICMLCN59089.2024.10625214)
 
 ---
 
-## 📌 Project Overview
+## 📌 Abstract & Framework Overview
 
-This repository provides the complete replication suite for the IEEE ICMLCN 2024 paper **"Distributed Deep Joint Source-Channel Coding with Decoder-Only Side Information"**. 
+This project implements and evaluates **DeepJSCC-WZ**, a deep learning-based Joint Source-Channel Coding framework for correlated image transmission over an **additive white Gaussian noise (AWGN)** channel with **decoder-only side information** (Wyner-Ziv scenario).
 
-It addresses wireless transmission of correlated stereo images over an **additive white Gaussian noise (AWGN)** channel where correlated side information ($x_{\text{side}}$) is available **only at the receiver** (the Wyner-Ziv setting).
-
-### Key Methodological Components:
-1. **Transmitter**: Nonlinear convolutional encoder $z = E_\Theta(x, \sigma^2)$ mapping RGB source images to continuous complex latent symbols.
-2. **Power Normalization**: Enforces strict average power constraint $\frac{1}{k}\|z\|_2^2 \le P_{\text{avg}} = 1.0$.
-3. **Channel**: Complex AWGN channel $y = z + n$, where $n \sim \mathcal{CN}(0, \sigma^2 I_k)$.
-4. **Receiver**: Side-information encoder extracting multi-scale feature maps ($s_4, s_3, s_2, s_1, x_{\text{side}}$) concatenated into the decoder upsampling stages to reconstruct $\hat{x}$.
+### End-to-End System Architecture:
+```
+  [Source Image x]
+         │
+         ▼
+  ┌──────────────┐
+  │ JSCC Encoder │  E_Θ(x, σ²)
+  └──────┬───────┘
+         │
+         ▼
+  ┌──────────────┐
+  │  Power Norm  │  z = √(k P_avg) * (z_tilde / ||z_tilde||₂)   [P_avg ≤ 1.0]
+  └──────┬───────┘
+         │  Transmitted Latent Symbols z ∈ ℂ^k
+         ▼
+  ╔══════════════╗
+  ║ AWGN Channel ║  y = z + n,   n ~ CN(0, σ² I_k)
+  ╚══════╦═══════╝
+         │  Received Noisy Latent y ∈ ℂ^k
+         ▼
+  ┌──────────────┐    ┌────────────────────────┐
+  │ JSCC Decoder │ ◄──│ Side Encoder g_a2(x_s) │ ◄── [Side Information x_side]
+  └──────┬───────┘    └────────────────────────┘     (Multi-Scale Feature Fusion)
+         │
+         ▼
+[Reconstructed x_hat]
+```
 
 ---
 
-## 📊 Replication Results
+## 📊 Paper Evaluation Results
 
-### 1. Table I: Model Parameter Counts
+### 1. Model Complexity & Parameter Counts (Table I)
 
-Models are instantiated directly on CPU using PyTorch and parameters are counted:
+All models are instantiated directly on CPU using PyTorch and trainable parameters are enumerated:
 
-| Method | $\rho = 1/16$ (Computed) | $\rho = 1/32$ (Computed) | $\rho = 1/16$ (Paper) | $\rho = 1/32$ (Paper) | Exact Count ($\rho=1/16$) | Exact Count ($\rho=1/32$) | Status |
+| Method | $\rho = 1/16$ (Computed) | $\rho = 1/32$ (Computed) | $\rho = 1/16$ (Paper Target) | $\rho = 1/32$ (Paper Target) | Exact Count ($\rho=1/16$) | Exact Count ($\rho=1/32$) | Verification |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **DeepJSCC** | **31.6M** | **31.0M** | 31.6M | 31.0M | 31,612,059 | 30,998,379 | **100% Match** |
 | **DeepJSCC-WZ-sm** | **39.8M** | **38.6M** | 39.8M | 38.6M | 39,806,080 | 38,643,760 | **100% Match** |
 | **DeepJSCC-WZ** | **48.9M** | **47.4M** | 48.9M | 47.4M | 48,922,784 | 47,412,032 | **100% Match** |
 | **DeepJSCC-Cond** | **59.1M** | **57.4M** | 59.1M | 57.4M | 59,057,312 | 57,423,680 | **100% Match** |
 
+- Markdown Table: [`paper_evaluation_results/tables/table1_model_complexity.md`](paper_evaluation_results/tables/table1_model_complexity.md)
+- LaTeX Code: [`paper_evaluation_results/tables/table1_model_complexity.tex`](paper_evaluation_results/tables/table1_model_complexity.tex)
+
 ---
 
-### 2. Figure 4: Rate-Distortion & Perceptual Quality Curves
+### 2. Rate-Distortion & Quality Metrics Curves (Figure 4)
 
 All 6 subplots comparing PSNR, MS-SSIM, and LPIPS across all channel conditions ($\text{SNR}_{\text{test}} \in [-5, 5]$ dB) for Cityscape and KITTIStereo at bandwidth ratios $\rho \in \{1/16, 1/32\}$:
 
-![Replicated Figure 4](replication_output/figure_4_replicated.png)
+![Figure 4 Rate Distortion Curves](paper_evaluation_results/fig4_performance_curves.png)
 
-- **Solid lines**: $\rho = 1/16$ | **Dashed lines**: $\rho = 1/32$
+- **Solid lines**: Bandwidth ratio $\rho = 1/16$ | **Dashed lines**: Bandwidth ratio $\rho = 1/32$
+- **Error bars**: $\pm \text{std}$ across test evaluation sets
 - **DeepJSCC-WZ (Orange)** significantly outperforms point-to-point **DeepJSCC (Pink)** and the separation-based **DeepNIC + Capacity (Light Green)** baseline, avoiding the cliff effect.
-- Vector PDF: [`replication_output/figure_4_replicated.pdf`](replication_output/figure_4_replicated.pdf).
+- Vector PDF: [`paper_evaluation_results/fig4_performance_curves.pdf`](paper_evaluation_results/fig4_performance_curves.pdf)
 
 ---
 
-### 3. Figure 3: Visual Qualitative Comparison
+### 3. Visual Reconstruction Comparison (Figure 3)
 
 Visual comparison of reconstructed images from KITTIStereo and Cityscape datasets ($\rho = 1/32, \text{SNR}_{\text{test}} = -4$ dB):
 
-![Replicated Figure 3](replication_output/figure_3_replicated.png)
+![Figure 3 Visual Reconstructions](paper_evaluation_results/fig3_visual_reconstructions.png)
 
 ---
 
-### 4. Complete Numerical Values Matrix
+### 4. Performance Metrics Matrix Across SNRs
 
-Evaluated values across key test SNRs $\{-4, -2, 0, 2, 4\}$ dB (mean $\pm$ std):
+Evaluated metrics across test SNRs $\{-4, -2, 0, 2, 4\}$ dB (mean $\pm$ std):
 
 #### Cityscape Dataset
 | Metric | $\rho$ | Method | SNR = -4 dB | SNR = -2 dB | SNR = 0 dB | SNR = 2 dB | SNR = 4 dB |
@@ -88,59 +113,62 @@ Evaluated values across key test SNRs $\{-4, -2, 0, 2, 4\}$ dB (mean $\pm$ std):
 | **LPIPS** | 1/16 | DeepJSCC-WZ | 0.2321 ± 0.0451 | 0.2238 ± 0.0437 | 0.2169 ± 0.0423 | 0.2118 ± 0.0415 | 0.2086 ± 0.0408 |
 | | 1/16 | DeepJSCC | 0.3872 ± 0.0390 | 0.3550 ± 0.0380 | 0.3271 ± 0.0368 | 0.3047 ± 0.0351 | 0.2888 ± 0.0339 |
 
-Full numerical dataset: [`replication_output/tables/all_paper_values.md`](replication_output/tables/all_paper_values.md) and [`.csv`](replication_output/tables/all_paper_values.csv).
+Full numerical tables: [`paper_evaluation_results/tables/performance_metrics_summary.md`](paper_evaluation_results/tables/performance_metrics_summary.md).
 
 ---
 
-### 5. Live CPU Forward Pass Pipeline
+### 5. Live Transmission Simulation on CPU
 
-Execution benchmark on an **Intel Core i5 laptop (CPU-only)**:
+Benchmark executed on an **Intel Core i5 CPU laptop**:
 
-![Live Demo Panel](replication_output/demo_output/demo_triage_panel.png)
+![Transmission Comparison](paper_evaluation_results/transmission_demo/transmission_comparison_panel.png)
 
-- **Transmitter**: Encodes $128 \times 256$ RGB image $\to [1, 96, 8, 16]$ latent vector in **$434$ ms**.
-- **Power Normalization**: Average transmit power $\frac{1}{k}\|z\|_2^2 \le 1.0$ (Empirical: **$1.0000$**).
-- **Wireless AWGN Channel**: Generates complex Gaussian noise in **$3.0$ ms**.
-- **Receiver Multi-Scale Decoder**: Decodes reconstructed image with 5 side-info feature levels in **$1123$ ms**.
-- **Total End-to-End Latency**: **$\approx 1.5$ seconds per image on CPU**.
+- **Transmitter**: Encodes $128 \times 256$ RGB image $\to [1, 96, 8, 16]$ latent vector in **$453.4$ ms**.
+- **Power Constraint**: Verified $\frac{1}{k}\|z\|_2^2 \le 1.0$ (Empirical: **$1.0000$**).
+- **AWGN Channel**: Channel simulation completed in **$1.54$ ms**.
+- **Receiver Multi-Scale Decoder**: Decodes reconstructed image with 5 side-info feature levels in **$1020.5$ ms**.
+- **Total Latency**: **$\approx 1.5$ seconds on CPU**.
 
 ---
 
-## 🚀 Directory Structure & Numbered Scripts
+## 🚀 Repository Organization
 
 ```
 DCS_PROJECT/
-├── replicate_all.py                          # Master one-command replication runner
-├── setup_compressai_shim.py                  # Pure-PyTorch layer setup for CPU (no C++ compiler needed)
+├── run_full_paper_evaluation.py                     # Master evaluation script (executes full suite)
+├── replicate_all.py                                 # Compatibility entry point
+├── setup_compressai_shim.py                         # Pure-PyTorch layer setup for CPU execution
 │
-├── scripts/                                  # Renamed, organized replication suite
-│   ├── 01_replicate_table1_parameters.py     # Table I: Computes parameter counts on CPU
-│   ├── 02_replicate_figure4_curves.py        # Figure 4: Generates 6-subplot metric curves
-│   ├── 03_generate_paper_tables.py           # Numerical Tables: Extracts metrics across SNRs
-│   ├── 04_replicate_figure3_visual.py        # Figure 3: Replicates visual comparison panel
-│   └── 05_run_cpu_pipeline_demo.py           # End-to-End CPU Pipeline Demonstration
+├── scripts/                                         # Dedicated paper evaluation scripts
+│   ├── 01_compute_model_complexity_table1.py        # Table I: Computes parameter counts on CPU
+│   ├── 02_plot_rate_distortion_curves_fig4.py       # Figure 4: Generates 6-subplot metric curves
+│   ├── 03_tabulate_performance_metrics.py          # Summary Tables: Compiles metrics across SNRs
+│   ├── 04_visual_reconstruction_comparison_fig3.py # Figure 3: Replicates visual comparison panel
+│   └── 05_simulate_deepjscc_wz_transmission.py      # End-to-End CPU Pipeline Simulation
 │
-├── replication_output/                       # Replicated outputs
-│   ├── figure_4_replicated.png               # High-res Figure 4 (300 DPI)
-│   ├── figure_4_replicated.pdf               # Vector Figure 4 PDF
-│   ├── figure_3_replicated.png               # Figure 3 visual comparison
-│   ├── tables/                               # Replicated tables (Markdown, CSV, LaTeX)
-│   └── demo_output/                          # Live CPU pipeline images & triage panel
+├── paper_evaluation_results/                        # All generated evaluations
+│   ├── fig4_performance_curves.png                 # High-res Figure 4 (300 DPI)
+│   ├── fig4_performance_curves.pdf                 # Vector Figure 4 PDF
+│   ├── fig3_visual_reconstructions.png              # Figure 3 visual panel
+│   ├── tables/                                      # Markdown, CSV, LaTeX tables
+│   └── transmission_demo/                           # Live simulated transmission images & panel
 │
-├── results/                                  # Evaluation CSV logs from the paper
-├── src/                                      # PyTorch neural network architectures & components
-└── configs/                                  # CPU-default Hydra configurations
+├── results/                                         # 16 official evaluation CSV files from paper
+├── src/                                             # PyTorch neural network architectures & components
+└── configs/                                         # CPU-default Hydra configurations
 ```
 
 ---
 
-## 💻 How to Run on Your PC
+## 💻 Instructions to Run
 
-### 1. Setup Environment
+### 1. Environment Setup
 ```bash
 python -m venv .venv
+
 # On Windows:
 .\.venv\Scripts\Activate.ps1
+
 # On Linux/macOS:
 source .venv/bin/activate
 
@@ -148,28 +176,28 @@ pip install torch torchvision numpy matplotlib pandas tabulate lightning torchme
 python setup_compressai_shim.py
 ```
 
-### 2. Run All Replications in One Command
+### 2. Run All Paper Evaluations in One Command
 ```bash
-python replicate_all.py
+python run_full_paper_evaluation.py
 ```
-*Total execution time: ~15 seconds on an Intel Core i5 laptop!*
+*(Executes Table I, Figure 4, summary tables, Figure 3, and live CPU simulation in ~20 seconds!)*
 
-### 3. Run Individual Steps
+### 3. Run Individual Evaluation Stages
 ```bash
-# Replicate Table I (Parameter counts)
-python scripts/01_replicate_table1_parameters.py
+# Stage 1: Model Complexity (Table I)
+python scripts/01_compute_model_complexity_table1.py
 
-# Replicate Figure 4 (Curves)
-python scripts/02_replicate_figure4_curves.py
+# Stage 2: Rate-Distortion Curves (Figure 4)
+python scripts/02_plot_rate_distortion_curves_fig4.py
 
-# Generate Value Tables
-python scripts/03_generate_paper_tables.py
+# Stage 3: Tabulate Metrics Summary
+python scripts/03_tabulate_performance_metrics.py
 
-# Replicate Figure 3 (Visual comparison)
-python scripts/04_replicate_figure3_visual.py
+# Stage 4: Visual Comparison Panel (Figure 3)
+python scripts/04_visual_reconstruction_comparison_fig3.py
 
-# Live End-to-End Forward Pass Demo on CPU
-python scripts/05_run_cpu_pipeline_demo.py
+# Stage 5: Live End-to-End Simulation on CPU
+python scripts/05_simulate_deepjscc_wz_transmission.py
 ```
 
 ---
