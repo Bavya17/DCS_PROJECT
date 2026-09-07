@@ -33,3 +33,10 @@ multirun/
 Thumbs.db
 .vscode/
 .idea/
+
+# Presentations and non-code docs
+*.pptx
+*PRESENTATION*
+*presentation*
+*GUIDE*
+scratch/
