@@ -63,7 +63,7 @@ def create_synthetic_stereo_pair(width=256, height=128):
     return tensor_x, tensor_side
 
 
-def simulate_deepjscc_wz_transmission(snr_db: float = 0.0, bw_factor: int = 16, output_dir: str = "paper_evaluation_results/transmission_demo", ckpt_path: str = None):
+def simulate_deepjscc_wz_transmission(snr_db: float = 0.0, bw_factor: int = 16, output_dir: str = "paper_evaluation_results/transmission_demo", ckpt_path: str = None, custom_x: str = None, custom_side: str = None):
     os.makedirs(output_dir, exist_ok=True)
 
     print("=" * 85)
@@ -99,7 +99,7 @@ def simulate_deepjscc_wz_transmission(snr_db: float = 0.0, bw_factor: int = 16, 
 
     if ckpt_path and os.path.exists(ckpt_path):
         print(f"      [Checkpoint] Loading pretrained weights from {ckpt_path}...")
-        state_dict = torch.load(ckpt_path, map_location="cpu")
+        state_dict = torch.load(ckpt_path, map_location="cpu", weights_only=False)
         if "state_dict" in state_dict:
             state_dict = state_dict["state_dict"]
         model.load_state_dict(state_dict, strict=False)
@@ -109,8 +109,16 @@ def simulate_deepjscc_wz_transmission(snr_db: float = 0.0, bw_factor: int = 16, 
         print("             To reconstruct crisp images with 34+ dB PSNR, place official .ckpt in checkpoints/.")
 
     # 2. Input stereo image pair
-    print("\n[2/6] Generating stereo image pair (x, x_side) with disparity...")
-    x, x_side = create_synthetic_stereo_pair(width=256, height=128)
+    if custom_x and custom_side and os.path.exists(custom_x) and os.path.exists(custom_side):
+        print(f"\n[2/6] Loading custom stereo image pair from disk...")
+        print(f"      Source image:    {custom_x}")
+        print(f"      Side info image: {custom_side}")
+        t_trans = transforms.Compose([transforms.Resize((128, 256)), transforms.ToTensor()])
+        x = t_trans(Image.open(custom_x).convert("RGB")).unsqueeze(0)
+        x_side = t_trans(Image.open(custom_side).convert("RGB")).unsqueeze(0)
+    else:
+        print("\n[2/6] Generating stereo image pair (x, x_side) with disparity...")
+        x, x_side = create_synthetic_stereo_pair(width=256, height=128)
     print(f"      Source image x shape:      {list(x.shape)}  (Range: [{x.min():.2f}, {x.max():.2f}])")
     print(f"      Side image x_side shape:   {list(x_side.shape)} (Range: [{x_side.min():.2f}, {x_side.max():.2f}])")
 
@@ -234,4 +242,21 @@ def simulate_deepjscc_wz_transmission(snr_db: float = 0.0, bw_factor: int = 16, 
 
 
 if __name__ == "__main__":
-    simulate_deepjscc_wz_transmission(snr_db=0.0, bw_factor=16)
+    import argparse
+    parser = argparse.ArgumentParser(description="Simulate DeepJSCC-WZ Forward Transmission Pipeline on CPU")
+    parser.add_argument("--snr", type=float, default=0.0, help="Channel SNR in dB (default: 0.0)")
+    parser.add_argument("--bw", type=int, default=16, help="Bandwidth factor: 16 (rho=1/16) or 32 (rho=1/32) (default: 16)")
+    parser.add_argument("--ckpt", type=str, default=None, help="Path to custom pretrained checkpoint .ckpt")
+    parser.add_argument("--img_x", type=str, default=None, help="Path to source image x (PNG/JPG)")
+    parser.add_argument("--img_side", type=str, default=None, help="Path to side information image x_side (PNG/JPG)")
+    parser.add_argument("--out_dir", type=str, default="paper_evaluation_results/transmission_demo", help="Output directory")
+    args = parser.parse_args()
+
+    simulate_deepjscc_wz_transmission(
+        snr_db=args.snr,
+        bw_factor=args.bw,
+        output_dir=args.out_dir,
+        ckpt_path=args.ckpt,
+        custom_x=args.img_x,
+        custom_side=args.img_side,
+    )
