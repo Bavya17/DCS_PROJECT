@@ -28,10 +28,10 @@ trainer:
   accelerator: cpu
   devices: 1
   min_epochs: 1
-  max_epochs: 10
+  max_epochs: 48
   check_val_every_n_epoch: 1
 
 callbacks:
   early_stopping:
-    patience: 10
+    patience: 60
     min_delta: 0.001

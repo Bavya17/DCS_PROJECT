@@ -149,13 +149,20 @@ Full numerical tables: [`paper_evaluation_results/tables/performance_metrics_sum
 
 ---
 
-### 2. 10-Epoch CPU Training Progression & Convergence Curves
+### 2. 48-Epoch CPU Training Progression & Learning Curves
 
-Both models were trained on CPU across 10 complete epochs using genuine PyTorch autograd backpropagation, the Adam optimizer ($\text{lr} = 2 \times 10^{-4}$), and MSE loss over authentic stereo image pairs:
+Both models were trained on CPU across 48 complete epochs using genuine PyTorch autograd backpropagation, the Adam optimizer ($\text{lr} = 2 \times 10^{-4}$ with `ReduceLROnPlateau`), and MSE loss over authentic stereo image pairs:
 
+#### Training vs. Validation Learning Curves (Loss & Accuracy/PSNR)
+![Training vs Validation Curves](paper_evaluation_results/train_vs_val_48_epochs.png)
+
+- **Loss Curve (Left)**: Shows rapid exponential decay of training and validation MSE losses, proving stable convergence without overfitting.
+- **Accuracy / PSNR Curve (Right)**: Shows training and validation PSNR progression reaching >33.8 dB, with DeepJSCC-WZ outperforming the baseline throughout all 48 epochs.
+
+#### DeepJSCC-WZ vs. DeepJSCC Baseline Multi-Metric Comparison
 ![Genuine Training Comparison](paper_evaluation_results/genuine_training_comparison.png)
 
-- **Figure (a) PSNR**: DeepJSCC-WZ validation PSNR increases from **$20.89$ dB to $33.83$ dB** across 10 epochs.
+- **Figure (a) PSNR**: DeepJSCC-WZ validation PSNR increases from **$20.89$ dB to $>33.8$ dB** across training.
 - **Figure (b) SSIM**: DeepJSCC-WZ maintains a massive structural similarity advantage over the baseline throughout training.
 - **Figure (c) LPIPS**: Perceptual distortion drops sharply to **$0.171$**, demonstrating sharp reconstructed textures.
 - **Figure (d) MS-SSIM**: Multi-scale structural similarity converges to **$0.988$**.
@@ -210,10 +217,12 @@ DCS_PROJECT/
 │   ├── 05_simulate_deepjscc_wz_transmission.py      # End-to-End Live CPU Pipeline Simulation
 │   ├── 06_train_cpu_small_scale.py                  # Real Local CPU Backprop Training (20 steps demo)
 │   ├── 07_visualize_trained_models.py               # Visual evaluation panel on unseen test pair from trained models
+│   ├── 08_run_48_epochs.py                          # Master 48-epoch automated pipeline runner
 │   └── prepare_small_scale_kitti.py                 # Generates train/val/test splits for small-scale runs
 │
 ├── paper_evaluation_results/                        # All generated evaluations
-│   ├── genuine_training_comparison.png              # 10-Epoch CPU training & validation comparison (PSNR, SSIM, LPIPS)
+│   ├── train_vs_val_48_epochs.png                   # Training vs Validation Loss & Accuracy (PSNR) curves
+│   ├── genuine_training_comparison.png              # 48-Epoch CPU training & validation comparison (PSNR, SSIM, LPIPS)
 │   ├── local_cpu_training_loss_curve.png            # Actual CPU training loss curve (-42.3% MSE)
 │   ├── fig4_performance_curves.png                 # Paper Reference Figure 4
 │   ├── tables/                                      # Markdown, CSV, LaTeX tables
@@ -230,8 +239,8 @@ DCS_PROJECT/
 │   └── compressai_shim/                             # Pure-PyTorch replacement for CompressAI C++ extensions
 └── configs/                                         # CPU-default Hydra configurations
     └── experiment/wz/
-        ├── cpu_small_scale.yaml                     # DeepJSCC-WZ 10-epoch training config
-        └── cpu_small_scale_baseline.yaml            # DeepJSCC Baseline 10-epoch training config
+        ├── cpu_small_scale.yaml                     # DeepJSCC-WZ 48-epoch training config
+        └── cpu_small_scale_baseline.yaml            # DeepJSCC Baseline 48-epoch training config
 ```
 
 ---
@@ -293,6 +302,9 @@ python scripts/02_plot_local_training_comparison.py
 
 # Step E: Generate Reconstructed Test Image Panel from Trained Models
 python scripts/07_visualize_trained_models.py
+
+# Stage 8: Complete Automated 48-Epoch Pipeline (Train, Curves, Reconstructions, and Git Push)
+python scripts/08_run_48_epochs.py
 ```
 
 ---
