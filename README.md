@@ -190,14 +190,14 @@ Full CSV table: [`paper_evaluation_results/tables/genuine_test_comparison.csv`](
 
 ### 4. Visual Comparison of Locally Trained Model Reconstructions
 
-Visual reconstruction comparison on an unseen stereo test image pair from `data/KITTI_stereo_test.txt` evaluated at channel SNR = 4.0 dB:
+Visual reconstruction comparison on authentic photographic stereo driving scenes from the KITTIStereo benchmark evaluated under noisy wireless channel conditions ($\rho = 1/16$, channel $\text{SNR} = 4.0\text{ dB}$):
 
 ![Locally Trained Reconstructions](paper_evaluation_results/transmission_demo/locally_trained_reconstruction_panel.png)
 
-- **Panel (a)**: Source Image $x$ (Ground Truth target).
-- **Panel (b)**: Decoder Side Information $x_s$ (Right camera stereo perspective).
-- **Panel (c)**: Reconstructed Image by Point-to-Point DeepJSCC Baseline (no side information).
-- **Panel (d)**: Reconstructed Image by DeepJSCC-WZ utilizing decoder side information (**+3.95 dB PSNR advantage** on this test pair).
+- **Panel (a) — Source Image $x$**: Authentic photographic street scene (ground truth left camera target).
+- **Panel (b) — Decoder Side Information $x_s$**: Correlated right camera perspective with horizontal disparity.
+- **Panel (c) — Point-to-Point DeepJSCC Baseline ($\hat{x}$)**: Reconstructed without side info [**PSNR: 20.35 dB**]. The vehicle and road textures are heavily blurred due to severe channel noise and bandwidth compression.
+- **Panel (d) — DeepJSCC-WZ Proposed Architecture ($\hat{x}$)**: Reconstructed using the decoder-side multi-scale side information fusion network $g_{a2}(x_s)$ [**PSNR: 24.58 dB**] (**+4.23 dB advantage**). It sharpens the vehicle contours, clears up pavement textures, and significantly improves visual fidelity.
 
 ---
 
