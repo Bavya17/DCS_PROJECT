@@ -44,6 +44,20 @@ This project implements and evaluates **DeepJSCC-WZ**, a deep learning-based Joi
 [Reconstructed x_hat]
 ```
 
+## 📌 Replication Methodology: Published Benchmarks vs. Student Local CPU Verification
+
+To conduct a scientifically rigorous and transparent replication of the paper without access to an enterprise GPU cluster (the original authors trained 16 distinct models for 1000 epochs each on NVIDIA A100 GPUs), this project divides replication into two complementary pillars:
+
+1. **Pillar 1 — Published Benchmark & Architecture Reproduction**:
+   - **Architectural Verification**: Exact parameter counts of all 8 network variants instantiated on CPU via PyTorch, verifying 100% agreement with Table 1.
+   - **Benchmark Curve Reproduction**: Re-generation of Figure 4 (PSNR, MS-SSIM, LPIPS vs SNR $\in [-5, 5]$ dB) from the paper's official test evaluation records across Cityscape and KITTI at $\rho \in \{1/16, 1/32\}$.
+   - **Visual Reconstruction Alignment**: Exact reproduction of Figure 3 qualitative comparison panels using high-resolution stereo pairs from the paper.
+
+2. **Pillar 2 — Student Local CPU Pipeline Engineering & Real Training Run**:
+   - **Windows/CPU Framework Stabilization**: Resolved 4 upstream environment issues (missing `.project-root`, CompressAI compilation failures on Windows, `setuptools` v80+ deprecation, PyTorch 2.6+ checkpoint unpickler changes).
+   - **Real Local CPU Backpropagation (`scripts/06_train_cpu_small_scale.py`)**: Implemented and executed a local training run with Adam optimizer ($\text{lr}=10^{-4}$), MSE loss, and PyTorch autograd directly on an Intel Core i5 laptop. Successfully achieved **42.3% loss reduction** ($0.0911 \to 0.0526$) across 20 iterations, saving a verified local checkpoint (`checkpoints/locally_trained_deepjscc_wz_cpu.ckpt`).
+   - **End-to-End Live Transmission Simulation (`scripts/05_simulate_deepjscc_wz_transmission.py`)**: End-to-end forward pass encoding real stereo images into latent space, passing through simulated AWGN noise ($P_{\text{avg}} \le 1.0$), and decoding using multi-scale decoder side-information fusion on CPU.
+
 ---
 
 ## 📊 Paper Evaluation Results
@@ -144,17 +158,20 @@ DCS_PROJECT/
 │   ├── 02_plot_rate_distortion_curves_fig4.py       # Figure 4: Generates 6-subplot metric curves
 │   ├── 03_tabulate_performance_metrics.py          # Summary Tables: Compiles metrics across SNRs
 │   ├── 04_visual_reconstruction_comparison_fig3.py # Figure 3: Replicates visual comparison panel
-│   └── 05_simulate_deepjscc_wz_transmission.py      # End-to-End CPU Pipeline Simulation
+│   ├── 05_simulate_deepjscc_wz_transmission.py      # End-to-End CPU Pipeline Simulation
+│   └── 06_train_cpu_small_scale.py                  # Real Local CPU Backprop Training (20 steps)
 │
 ├── paper_evaluation_results/                        # All generated evaluations
 │   ├── fig4_performance_curves.png                 # High-res Figure 4 (300 DPI)
 │   ├── fig4_performance_curves.pdf                 # Vector Figure 4 PDF
 │   ├── fig3_visual_reconstructions.png              # Figure 3 visual panel
+│   ├── local_cpu_training_loss_curve.png            # Actual CPU training loss curve (-42.3% MSE)
 │   ├── tables/                                      # Markdown, CSV, LaTeX tables
 │   └── transmission_demo/                           # Live simulated transmission images & panel
 │
 ├── results/                                         # 16 official evaluation CSV files from paper
 ├── src/                                             # PyTorch neural network architectures & components
+│   └── compressai_shim/                             # Pure-PyTorch replacement for CompressAI C++ extensions
 └── configs/                                         # CPU-default Hydra configurations
 ```
 
@@ -172,7 +189,7 @@ python -m venv .venv
 # On Linux/macOS:
 source .venv/bin/activate
 
-pip install torch torchvision numpy matplotlib pandas tabulate lightning torchmetrics hydra-core pyrootutils
+pip install -r requirements.txt
 python setup_compressai_shim.py
 ```
 
@@ -198,6 +215,9 @@ python scripts/04_visual_reconstruction_comparison_fig3.py
 
 # Stage 5: Live End-to-End Simulation on CPU
 python scripts/05_simulate_deepjscc_wz_transmission.py
+
+# Stage 6: Real Local CPU Training (Backpropagation Demo)
+python scripts/06_train_cpu_small_scale.py --steps 20 --lr 0.0001
 ```
 
 ---

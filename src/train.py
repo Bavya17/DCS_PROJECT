@@ -1,6 +1,14 @@
 import os
 import uuid
 import torch
+# PyTorch 2.6+ compatibility patch for PyTorch Lightning checkpoint deserialization
+_orig_torch_load = torch.load
+def _safe_torch_load(*args, **kwargs):
+    if "weights_only" not in kwargs:
+        kwargs["weights_only"] = False
+    return _orig_torch_load(*args, **kwargs)
+torch.load = _safe_torch_load
+
 from typing import List, Optional, Tuple
 import hydra
 import pyrootutils
@@ -8,10 +16,8 @@ import lightning as pl
 from omegaconf import DictConfig
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
-import os
 pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 from src import utils
-#torch.set_float32_matmul_precision("medium")
 torch.set_float32_matmul_precision("high")
 
 log = utils.get_pylogger(__name__)

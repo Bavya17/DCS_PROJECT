@@ -1,57 +1,35 @@
 import os
+import sys
 import shutil
+import site
 
-base_dir = os.path.join(".venv", "Lib", "site-packages", "compressai")
+# Locate active site-packages directory
+site_packages = None
+for p in site.getsitepackages():
+    if "site-packages" in p:
+        site_packages = p
+        break
+
+if not site_packages or not os.path.exists(site_packages):
+    site_packages = os.path.join(sys.prefix, "Lib", "site-packages")
+
+base_dir = os.path.join(site_packages, "compressai")
+src_shim = os.path.join(os.path.dirname(__file__), "src", "compressai_shim")
+
+print(f"Installing CompressAI pure-PyTorch shim into: {base_dir}")
 os.makedirs(os.path.join(base_dir, "layers"), exist_ok=True)
 os.makedirs(os.path.join(base_dir, "ops"), exist_ok=True)
 
 with open(os.path.join(base_dir, "__init__.py"), "w", encoding="utf-8") as f:
     f.write('__version__ = "1.2.8"\n')
 
-with open(os.path.join(base_dir, "ops", "__init__.py"), "w", encoding="utf-8") as f:
-    f.write("from .parametrizers import NonNegativeParametrizer\nfrom .bound_ops import LowerBound\n")
+# Copy all verified pure-PyTorch implementation files from src/compressai_shim
+for folder in ["ops", "layers"]:
+    src_folder = os.path.join(src_shim, folder)
+    dst_folder = os.path.join(base_dir, folder)
+    os.makedirs(dst_folder, exist_ok=True)
+    for fname in os.listdir(src_folder):
+        if fname.endswith(".py"):
+            shutil.copy2(os.path.join(src_folder, fname), os.path.join(dst_folder, fname))
 
-with open(os.path.join(base_dir, "ops", "bound_ops.py"), "w", encoding="utf-8") as f:
-    f.write('''import torch
-import torch.nn as nn
-from torch import Tensor
-
-class LowerBoundFunction(torch.autograd.Function):
-    @staticmethod
-    def forward(ctx, x, bound):
-        ctx.save_for_backward(x, bound)
-        return torch.max(x, bound)
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        x, bound = ctx.saved_tensors
-        pass_through_if = (x >= bound) | (grad_output < 0)
-        return grad_output * pass_through_if.float(), None
-
-class LowerBound(nn.Module):
-    def __init__(self, bound: float):
-        super().__init__()
-        self.register_buffer("bound", torch.Tensor([bound]))
-
-    def forward(self, x: Tensor) -> Tensor:
-        return LowerBoundFunction.apply(x, self.bound)
-''')
-
-shutil.copy("compressai_param_reference.py", os.path.join(base_dir, "ops", "parametrizers.py"))
-shutil.copy("compressai_gdn_reference.py", os.path.join(base_dir, "layers", "gdn.py"))
-shutil.copy("compressai_layers_reference.py", os.path.join(base_dir, "layers", "layers.py"))
-
-with open(os.path.join(base_dir, "layers", "__init__.py"), "w", encoding="utf-8") as f:
-    f.write('''from .layers import (
-    AttentionBlock,
-    ResidualBlock,
-    ResidualBlockUpsample,
-    ResidualBlockWithStride,
-    conv1x1,
-    conv3x3,
-    subpel_conv3x3,
-)
-from .gdn import GDN, GDN1
-''')
-
-print("CompressAI pure-PyTorch layer package created successfully!")
+print("CompressAI pure-PyTorch layer package installed successfully!")
