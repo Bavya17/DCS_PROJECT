@@ -218,6 +218,16 @@ python scripts/05_simulate_deepjscc_wz_transmission.py
 
 # Stage 6: Real Local CPU Training (Backpropagation Demo)
 python scripts/06_train_cpu_small_scale.py --steps 20 --lr 0.0001
+
+# Stage 7: Small-Scale CPU Hydra Training Suite (DeepJSCC vs DeepJSCC-WZ)
+# Step A: Prepare dataset index files (~250 train / 50 val / 56 test)
+python scripts/prepare_small_scale_kitti.py
+
+# Step B: Train DeepJSCC-WZ (N=64, 64x128 resolution, batch_size=8, max_epochs=50)
+python src/train.py experiment=wz/cpu_small_scale
+
+# Step C: Train DeepJSCC Baseline (Point-to-point without side info for comparison)
+python src/train.py experiment=wz/cpu_small_scale_baseline
 ```
 
 ---

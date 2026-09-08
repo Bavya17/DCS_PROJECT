@@ -24,6 +24,8 @@ data/data_scene_flow_multiview/
 
 # Logs and Hydra outputs
 logs/
+csv_logs/
+mlruns/
 outputs/
 multirun/
 *.log

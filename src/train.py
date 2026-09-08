@@ -4,8 +4,7 @@ import torch
 # PyTorch 2.6+ compatibility patch for PyTorch Lightning checkpoint deserialization
 _orig_torch_load = torch.load
 def _safe_torch_load(*args, **kwargs):
-    if "weights_only" not in kwargs:
-        kwargs["weights_only"] = False
+    kwargs["weights_only"] = False
     return _orig_torch_load(*args, **kwargs)
 torch.load = _safe_torch_load
 

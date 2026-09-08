@@ -61,11 +61,19 @@ class CustomLearnedPerceptualImagePatchSimilarity(LearnedPerceptualImagePatchSim
     def __init__(self, net_type: Literal['vgg', 'alex', 'squeeze'] = "alex", normalize: bool = False, **kwargs: Any) -> None:
         super().__init__(net_type, normalize=normalize, reduction="mean", **kwargs)
         
+        self.add_state("sum_scores", torch.tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("total", torch.tensor(0.0), dist_reduce_fx="sum")
         self.add_state("sum_sq", torch.tensor(0.0), dist_reduce_fx="sum")
 
     def update(self, img1: Tensor, img2: Tensor) -> None:
         """Update internal states with lpips score."""
-        loss, total = _lpips_update(img1, img2, net=self.net, normalize=self.normalize)
+        res = _lpips_update(img1, img2, net=self.net, normalize=self.normalize)
+        if isinstance(res, tuple):
+            loss = res[0]
+            total = res[1] if len(res) > 1 else img1.shape[0]
+        else:
+            loss = res
+            total = img1.shape[0]
         
         self.sum_scores += loss.sum()
         self.total += total
@@ -74,7 +82,7 @@ class CustomLearnedPerceptualImagePatchSimilarity(LearnedPerceptualImagePatchSim
 
     def compute(self) -> Tensor:
         """Compute final perceptual similarity metric."""
-        mean = _lpips_compute(self.sum_scores, self.total, "mean")
+        mean = self.sum_scores / self.total
         std = torch.sqrt((self.sum_sq / self.total) - mean**2)
         
         return mean, std

@@ -1,0 +1,35 @@
+# @package _global_
+defaults:
+  - override /model: base_deepjscc
+  - override /logger: csv
+  - _self_
+
+task_name: "deepjscc_wz_cpu_small_scale"
+tags: ["cpu", "small_scale", "N64", "bw16"]
+
+model:
+  _target_: src.models.wz.deepjscc_wz_baseline2.DeepJSCCWZBaseline2
+  snr: "undefined"
+  N: 64
+  bw_factor: 16
+  csi:
+    min: -5.0
+    max: 5.0
+
+data:
+  name: "KittiStereo"
+  resize: [64, 128]
+  batch_size: 8
+  num_workers: 0
+
+trainer:
+  accelerator: cpu
+  devices: 1
+  min_epochs: 1
+  max_epochs: 50
+  check_val_every_n_epoch: 1
+
+callbacks:
+  early_stopping:
+    patience: 10
+    min_delta: 0.001
