@@ -181,6 +181,19 @@ Full CSV table: [`paper_evaluation_results/tables/genuine_test_comparison.csv`](
 
 ---
 
+### 4. Visual Comparison of Locally Trained Model Reconstructions
+
+Visual reconstruction comparison on an unseen stereo test image pair from `data/KITTI_stereo_test.txt` evaluated at channel SNR = 4.0 dB:
+
+![Locally Trained Reconstructions](paper_evaluation_results/transmission_demo/locally_trained_reconstruction_panel.png)
+
+- **Panel (a)**: Source Image $x$ (Ground Truth target).
+- **Panel (b)**: Decoder Side Information $x_s$ (Right camera stereo perspective).
+- **Panel (c)**: Reconstructed Image by Point-to-Point DeepJSCC Baseline (no side information).
+- **Panel (d)**: Reconstructed Image by DeepJSCC-WZ utilizing decoder side information (**+3.95 dB PSNR advantage** on this test pair).
+
+---
+
 ## 🚀 Repository Organization
 
 ```
@@ -196,6 +209,7 @@ DCS_PROJECT/
 │   ├── 04_visual_reconstruction_comparison_fig3.py # Figure 3: Replicates visual comparison panel (Paper reference)
 │   ├── 05_simulate_deepjscc_wz_transmission.py      # End-to-End Live CPU Pipeline Simulation
 │   ├── 06_train_cpu_small_scale.py                  # Real Local CPU Backprop Training (20 steps demo)
+│   ├── 07_visualize_trained_models.py               # Visual evaluation panel on unseen test pair from trained models
 │   └── prepare_small_scale_kitti.py                 # Generates train/val/test splits for small-scale runs
 │
 ├── paper_evaluation_results/                        # All generated evaluations
@@ -206,7 +220,10 @@ DCS_PROJECT/
 │   │   ├── genuine_test_comparison.md               # Genuine local test evaluation table
 │   │   ├── genuine_test_comparison.csv              # CSV format
 │   │   └── table1_model_complexity.md               # PyTorch-computed Table 1 parameter counts
-│   └── transmission_demo/                           # Live simulated transmission images & comparison panel
+│   └── transmission_demo/                           # Live simulated transmission images & comparison panels
+│       ├── locally_trained_reconstruction_panel.png # Visual comparison between trained DeepJSCC vs DeepJSCC-WZ
+│       ├── test_recon_baseline.png                  # Reconstructed test image (Baseline)
+│       └── test_recon_deepjscc_wz.png               # Reconstructed test image (DeepJSCC-WZ)
 │
 ├── results/                                         # 16 official evaluation CSV files from paper (Reference)
 ├── src/                                             # PyTorch neural network architectures & components
@@ -265,11 +282,17 @@ python scripts/06_train_cpu_small_scale.py --steps 20 --lr 0.0001
 # Step A: Prepare dataset index files (~250 train / 50 val / 56 test)
 python scripts/prepare_small_scale_kitti.py
 
-# Step B: Train DeepJSCC-WZ (N=64, 64x128 resolution, batch_size=8, max_epochs=50)
+# Step B: Train DeepJSCC-WZ (N=64, 64x128 resolution, batch_size=8, max_epochs=10 or 50)
 python src/train.py experiment=wz/cpu_small_scale
 
 # Step C: Train DeepJSCC Baseline (Point-to-point without side info for comparison)
 python src/train.py experiment=wz/cpu_small_scale_baseline
+
+# Step D: Plot Convergence Curves & Compile Test Performance Comparison Table
+python scripts/02_plot_local_training_comparison.py
+
+# Step E: Generate Reconstructed Test Image Panel from Trained Models
+python scripts/07_visualize_trained_models.py
 ```
 
 ---
