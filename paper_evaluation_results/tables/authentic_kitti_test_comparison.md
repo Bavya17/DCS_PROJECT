@@ -1,6 +1,6 @@
 # Locally Trained CPU Models: Final Test Evaluation Comparison (48 Epochs)
 
-Tested on 56 authentic KITTI stereo test image pairs over AWGN Channel ($\text{SNR} \in [-5, 5]$ dB, $\rho = 1/16$, $N = 64$):
+Tested on 60 authentic KITTI stereo test image pairs over AWGN Channel ($\text{SNR} \in [-5, 5]$ dB, $\rho = 1/16$, $N = 64$):
 
 | Metric | DeepJSCC Baseline (No Side Info) | DeepJSCC-WZ (With Decoder Side Info) | Improvement / Advantage |
 |:---|:---:|:---:|:---:|
