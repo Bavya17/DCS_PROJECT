@@ -139,11 +139,11 @@ def generate_visual_reconstructions(ckpt_wz, ckpt_base):
     axes[0, 1].axis("off")
 
     axes[1, 0].imshow(img_base)
-    axes[1, 0].set_title(f"(c) Point-to-Point DeepJSCC Baseline [PSNR: {psnr_base:.2f} dB, SSIM: {ssim_base:.4f}]", fontsize=13, fontweight="bold", pad=8)
+    axes[1, 0].set_title(f"(c) Point-to-Point DeepJSCC Baseline\nPSNR: {psnr_base:.2f} dB | SSIM: {ssim_base:.4f}", fontsize=12, fontweight="bold", pad=8)
     axes[1, 0].axis("off")
 
     axes[1, 1].imshow(img_wz)
-    axes[1, 1].set_title(f"(d) DeepJSCC-WZ Proposed Architecture [PSNR: {psnr_wz:.2f} dB, SSIM: {ssim_wz:.4f}] (+{ssim_wz - ssim_base:.4f})", fontsize=13, fontweight="bold", color="darkgreen", pad=8)
+    axes[1, 1].set_title(f"(d) DeepJSCC-WZ Proposed Architecture\nPSNR: {psnr_wz:.2f} dB | SSIM: {ssim_wz:.4f} (+{ssim_wz - ssim_base:.4f} SSIM)", fontsize=12, fontweight="bold", color="darkgreen", pad=8)
     axes[1, 1].axis("off")
 
     plt.suptitle("Visual Reconstruction Comparison: KITTIStereo Benchmark (rho = 1/16, SNR = 4.0 dB)", fontsize=15, fontweight="bold", y=0.98)

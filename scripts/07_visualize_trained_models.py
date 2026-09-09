@@ -31,9 +31,9 @@ def main():
         "bw_factor": 16
     }
 
-    # Load 48-epoch checkpoints
-    ckpt_base = "logs/deepjscc_baseline_cpu_small_scale/runs/2026-09-08_20-00-59/checkpoints/last.ckpt"
-    ckpt_wz = "logs/deepjscc_wz_cpu_small_scale/runs/2026-09-08_19-28-27/checkpoints/last.ckpt"
+    # Load authentic 48-epoch checkpoints (from zero-leakage run)
+    ckpt_base = "logs/deepjscc_baseline_cpu_small_scale/runs/2026-09-09_20-53-04/checkpoints/last.ckpt"
+    ckpt_wz = "logs/deepjscc_wz_cpu_small_scale/runs/2026-09-09_20-16-02/checkpoints/last.ckpt"
 
     print(f"Loading Baseline checkpoint: {ckpt_base}")
     m_base = DeepJSCCWZBaseline(**base_kwargs)
@@ -96,11 +96,11 @@ def main():
     axes[0, 1].axis("off")
 
     axes[1, 0].imshow(img_base)
-    axes[1, 0].set_title(f"(c) DeepJSCC Baseline [48-Epoch Model]\nPSNR: {psnr_b:.2f} dB | SSIM: {ssim_b:.4f}", fontsize=12, fontweight="bold", pad=8)
+    axes[1, 0].set_title(f"(c) DeepJSCC Baseline [48-Epoch Model]\nPSNR: {psnr_b:.2f} dB | SSIM: {ssim_b:.4f}", fontsize=11, fontweight="bold", pad=8)
     axes[1, 0].axis("off")
 
     axes[1, 1].imshow(img_wz)
-    axes[1, 1].set_title(f"(d) DeepJSCC-WZ Proposed [48-Epoch Model]\nPSNR: {psnr_w:.2f} dB | SSIM: {ssim_w:.4f} (+{ssim_w - ssim_b:.4f} SSIM)", fontsize=12, fontweight="bold", color="darkgreen", pad=8)
+    axes[1, 1].set_title(f"(d) DeepJSCC-WZ Proposed [48-Epoch Model]\nPSNR: {psnr_w:.2f} dB | SSIM: {ssim_w:.4f} (+{ssim_w - ssim_b:.4f} SSIM)", fontsize=11, fontweight="bold", color="darkgreen", pad=8)
     axes[1, 1].axis("off")
 
     plt.suptitle("Genuine 48-Epoch Model Visual Reconstruction (AWGN Channel: SNR = 4.0 dB, rho = 1/16)", fontsize=14, fontweight="bold", y=0.98)

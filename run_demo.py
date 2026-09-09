@@ -26,9 +26,9 @@ def main():
     print("Implementation: Pure PyTorch Native Tensor GDN | Dataset: KITTI Stereo Benchmark")
     print("Wireless Channel: Additive White Gaussian Noise (AWGN) | Compression Ratio: rho = 1/16")
 
-    # 1. Model Checkpoints
-    ckpt_base = "logs/deepjscc_baseline_cpu_small_scale/runs/2026-09-08_20-00-59/checkpoints/last.ckpt"
-    ckpt_wz = "logs/deepjscc_wz_cpu_small_scale/runs/2026-09-08_19-28-27/checkpoints/last.ckpt"
+    # 1. Model Checkpoints (Authentic Zero-Leakage 48-Epoch Models)
+    ckpt_base = "logs/deepjscc_baseline_cpu_small_scale/runs/2026-09-09_20-53-04/checkpoints/last.ckpt"
+    ckpt_wz = "logs/deepjscc_wz_cpu_small_scale/runs/2026-09-09_20-16-02/checkpoints/last.ckpt"
 
     print("\n[Step 1/4] Loading Trained 48-Epoch Model Checkpoints...")
     base_kwargs = {
