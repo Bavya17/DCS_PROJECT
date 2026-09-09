@@ -106,14 +106,9 @@ def main():
     plt.suptitle("Genuine 48-Epoch Model Visual Reconstruction (AWGN Channel: SNR = 4.0 dB, rho = 1/16)", fontsize=14, fontweight="bold", y=0.98)
     plt.tight_layout()
 
-    out_panel = "paper_evaluation_results/transmission_demo/locally_trained_reconstruction_panel.png"
+    out_panel = "paper_evaluation_results/transmission_demo/authentic_kitti_reconstruction_panel.png"
     plt.savefig(out_panel, dpi=300, bbox_inches="tight")
     plt.close()
-
-    # Save dedicated high-res file
-    out_panel_48ep = "paper_evaluation_results/genuine_48epochs_reconstruction_panel.png"
-    img_panel = Image.open(out_panel)
-    img_panel.save(out_panel_48ep)
 
     # Save individual reconstructed frames
     img_gt.save("paper_evaluation_results/transmission_demo/source_image_x.png")
@@ -121,7 +116,7 @@ def main():
     img_base.save("paper_evaluation_results/transmission_demo/test_recon_baseline.png")
     img_wz.save("paper_evaluation_results/transmission_demo/test_recon_deepjscc_wz.png")
 
-    print(f"\nSaved genuine reconstruction panel to:\n  - {out_panel}\n  - {out_panel_48ep}")
+    print(f"\nSaved authentic reconstruction panel to:\n  - {out_panel}")
 
 if __name__ == "__main__":
     main()

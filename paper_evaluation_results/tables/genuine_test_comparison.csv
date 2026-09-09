@@ -1,9 +1,0 @@
-Metric,DeepJSCC Baseline,DeepJSCC-WZ,Advantage
-Test PSNR (dB),18.94 +/- 1.07,21.81 +/- 1.45,+2.87 dB
-Test SSIM,0.5268 +/- 0.0474,0.7489 +/- 0.0298,+22.2% (+0.2221)
-Test MS-SSIM,0.7635 +/- 0.0311,0.9045 +/- 0.0155,+0.1410
-Test LPIPS,0.5513 +/- 0.0303,0.3288 +/- 0.0308,-40.4% Distortion Reduction
-Test Loss,0.013698,0.007328,Lowest MSE distortion
-Epochs Trained,48 Full Epochs,48 Full Epochs,Fully Converged
-Parameters,32.0M,34.0M,Decoder-only multi-scale fusion
-Hardware Device,Intel Core i5 (CPU),Intel Core i5 (CPU),"Pure-PyTorch, No GPU required"
