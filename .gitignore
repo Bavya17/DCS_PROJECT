@@ -39,6 +39,7 @@ Thumbs.db
 # Presentations and non-code docs
 *.pptx
 *.docx
+*.pdf
 *PRESENTATION*
 *presentation*
 *GUIDE*
