@@ -155,8 +155,9 @@ def generate_visual_reconstructions(ckpt_wz, ckpt_base):
     print(f"DeepJSCC Baseline PSNR: {psnr_base:.2f} dB")
     print(f"DeepJSCC-WZ PSNR:       {psnr_wz:.2f} dB (Advantage: +{psnr_wz - psnr_base:.2f} dB)")
 
-    base_resized.save("paper_evaluation_results/transmission_demo/test_recon_baseline.png")
-    wz_resized.save("paper_evaluation_results/transmission_demo/test_recon_deepjscc_wz.png")
+    img_base.save("paper_evaluation_results/transmission_demo/test_recon_baseline.png")
+    img_wz.save("paper_evaluation_results/transmission_demo/test_recon_deepjscc_wz.png")
+    print("Saved test_recon_baseline.png and test_recon_deepjscc_wz.png")
 
 def plot_and_tabulate(wz_csv, base_csv):
     print("\n" + "=" * 80)
