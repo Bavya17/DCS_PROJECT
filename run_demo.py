@@ -129,7 +129,7 @@ def main():
     plt.suptitle("Authentic 48-Epoch Model Visual Reconstruction Demo (AWGN: SNR = 4.0 dB, rho = 1/16)", fontsize=13, fontweight="bold", y=0.98)
     plt.tight_layout()
 
-    out_panel = "paper_evaluation_results/transmission_demo/locally_trained_reconstruction_panel.png"
+    out_panel = "paper_evaluation_results/transmission_demo/authentic_kitti_reconstruction_panel.png"
     plt.savefig(out_panel, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"  -> Visual panel saved to: {out_panel}")
