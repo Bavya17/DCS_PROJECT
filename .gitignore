@@ -38,7 +38,9 @@ Thumbs.db
 
 # Presentations and non-code docs
 *.pptx
+*.docx
 *PRESENTATION*
 *presentation*
 *GUIDE*
+scripts/build_review_materials.py
 scratch/

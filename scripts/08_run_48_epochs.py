@@ -95,51 +95,55 @@ def generate_visual_reconstructions(ckpt_wz, ckpt_base):
     m_base.load_state_dict(c_base["state_dict"], strict=False)
     m_base.eval()
     
-    # Load authentic photographic stereo test pair (clean of any text artifacts)
-    print("Preparing authentic photographic stereo driving scene...")
-    im_base = Image.open('paper_evaluation_results/kitti_col_0.png').convert('RGB')
-    im_wz = Image.open('paper_evaluation_results/kitti_col_1.png').convert('RGB')
-    im_gt = Image.open('paper_evaluation_results/kitti_col_2.png').convert('RGB')
+    # Load authentic test dataset item
+    from src.data.stereo import PairKittiCityscape
+    ds = PairKittiCityscape("data", "KittiStereo", "test", resize=(64, 128))
+    print(f"Total test set samples: {len(ds)}")
 
-    w, h = 256, 128
-    gt_resized = TF.resize(im_gt, (h, w), interpolation=TF.InterpolationMode.BICUBIC)
-    base_resized = TF.resize(im_base, (h, w), interpolation=TF.InterpolationMode.BICUBIC)
-    wz_resized = TF.resize(im_wz, (h, w), interpolation=TF.InterpolationMode.BICUBIC)
+    sample_idx = 0
+    (l, r), _ = ds[sample_idx]
+    l = l.unsqueeze(0)
+    r = r.unsqueeze(0)
+    csi = torch.tensor([[4.0]])
 
-    # Correlated right stereo perspective with horizontal disparity
-    arr_gt = np.array(gt_resized)
-    arr_xs = np.zeros_like(arr_gt)
-    shift = 12
-    arr_xs[:, :-shift] = arr_gt[:, shift:]
-    arr_xs[:, -shift:] = arr_gt[:, -1:]
-    xs_img = Image.fromarray(arr_xs)
+    with torch.no_grad():
+        torch.manual_seed(42)
+        pred_base = m_base(((l, r), csi)).clip(0, 1)
+        torch.manual_seed(42)
+        pred_wz = m_wz(((l, r), csi)).clip(0, 1)
 
-    # Metrics calculation
-    t_gt = TF.to_tensor(gt_resized)
-    t_base = TF.to_tensor(base_resized)
-    t_wz = TF.to_tensor(wz_resized)
+    from torchmetrics.functional.image import peak_signal_noise_ratio, structural_similarity_index_measure
+    mse_b = torch.mean((pred_base - l)**2).item()
+    psnr_base = peak_signal_noise_ratio(pred_base, l, data_range=(0.0, 1.0)).item()
+    ssim_base = structural_similarity_index_measure(pred_base, l, data_range=(0.0, 1.0)).item()
 
-    psnr_base = compute_psnr(t_gt, t_base)
-    psnr_wz = compute_psnr(t_gt, t_wz)
+    mse_w = torch.mean((pred_wz - l)**2).item()
+    psnr_wz = peak_signal_noise_ratio(pred_wz, l, data_range=(0.0, 1.0)).item()
+    ssim_wz = structural_similarity_index_measure(pred_wz, l, data_range=(0.0, 1.0)).item()
 
     # Create 4-panel comparison figure
     os.makedirs("paper_evaluation_results/transmission_demo", exist_ok=True)
     fig, axes = plt.subplots(2, 2, figsize=(14, 7), dpi=300)
 
-    axes[0, 0].imshow(gt_resized)
+    img_gt = TF.to_pil_image(l.squeeze(0))
+    img_xs = TF.to_pil_image(r.squeeze(0))
+    img_base = TF.to_pil_image(pred_base.squeeze(0))
+    img_wz = TF.to_pil_image(pred_wz.squeeze(0))
+
+    axes[0, 0].imshow(img_gt)
     axes[0, 0].set_title("(a) Source Image x (Ground Truth Left View)", fontsize=13, fontweight="bold", pad=8)
     axes[0, 0].axis("off")
 
-    axes[0, 1].imshow(xs_img)
+    axes[0, 1].imshow(img_xs)
     axes[0, 1].set_title("(b) Decoder Side Info x_s (Correlated Right Stereo View)", fontsize=13, fontweight="bold", pad=8)
     axes[0, 1].axis("off")
 
-    axes[1, 0].imshow(base_resized)
-    axes[1, 0].set_title(f"(c) Point-to-Point DeepJSCC Baseline [PSNR: {psnr_base:.2f} dB]", fontsize=13, fontweight="bold", pad=8)
+    axes[1, 0].imshow(img_base)
+    axes[1, 0].set_title(f"(c) Point-to-Point DeepJSCC Baseline [PSNR: {psnr_base:.2f} dB, SSIM: {ssim_base:.4f}]", fontsize=13, fontweight="bold", pad=8)
     axes[1, 0].axis("off")
 
-    axes[1, 1].imshow(wz_resized)
-    axes[1, 1].set_title(f"(d) DeepJSCC-WZ Proposed Architecture [PSNR: {psnr_wz:.2f} dB] (+{psnr_wz - psnr_base:.2f} dB)", fontsize=13, fontweight="bold", color="darkgreen", pad=8)
+    axes[1, 1].imshow(img_wz)
+    axes[1, 1].set_title(f"(d) DeepJSCC-WZ Proposed Architecture [PSNR: {psnr_wz:.2f} dB, SSIM: {ssim_wz:.4f}] (+{ssim_wz - ssim_base:.4f})", fontsize=13, fontweight="bold", color="darkgreen", pad=8)
     axes[1, 1].axis("off")
 
     plt.suptitle("Visual Reconstruction Comparison: KITTIStereo Benchmark (rho = 1/16, SNR = 4.0 dB)", fontsize=15, fontweight="bold", y=0.98)
