@@ -1,7 +1,7 @@
 # Distributed Deep Joint Source-Channel Coding with Wyner-Ziv Side Information and Content-Aware Multi-Scale Reliability Gating (DeepJSCC-WZ + SARG)
 
 > **Research Project & Official Repository**  
-> **Author**: Bavya Shree S and DCS Research Project Group  
+> **Author**: Bavya Shree H and DCS Research Project Group  
 > **Affiliation**: Department of Electronics & Communication Engineering  
 > **Target Publication**: IEEE Transactions on Wireless Communications / Conference Proceedings  
 > **Dataset**: Authentic KITTI Stereo 2015 Benchmark (Zero-Leakage Geographic Sequence Split)  
@@ -343,7 +343,7 @@ If you utilize this codebase, model architecture, or benchmark methodology in yo
 
 ```bibtex
 @article{bavya2026deepjscc_wz_sarg,
-  author    = {Bavya Shree S and DCS Research Project Group},
+  author    = {Bavya Shree H and DCS Research Project Group},
   title     = {Distributed Deep Joint Source-Channel Coding with Wyner-Ziv Side Information and Content-Aware Multi-Scale Reliability Gating for Edge Stereo Vision},
   journal   = {IEEE Transactions on Wireless Communications / Conference Proceedings},
   year      = {2026},
