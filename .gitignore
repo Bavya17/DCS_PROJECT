@@ -36,19 +36,10 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Presentations and non-code docs
+# Presentations and non-code docs (kept local only)
 *.pptx
+*.ppt
 *.docx
 *.pdf
-!IEEE_Conference_Paper_DeepJSCC_WZ.docx
-!IEEE_Conference_Paper_DeepJSCC_WZ.pdf
-!dcs_paper.docx
-!dcs_paper.pdf
-!IEEE_Conference_Paper_DeepJSCC_WZ_Authentic_KITTI.docx
-!IEEE_Conference_Paper_DeepJSCC_WZ_Authentic_KITTI.pdf
-!DeepJSCC_WZ_Final_Project_Presentation.pptx
-!DeepJSCC_WZ_Project_Review_Presentation.pptx
-!Project_Presentation_DeepJSCC_WZ.pptx
-!Line_By_Line_Code_Explanation_Guide.docx
 scripts/build_review_materials.py
 scratch/

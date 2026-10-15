@@ -244,10 +244,10 @@ Evaluated over 60 test scenes $\times$ 20 fixed random noise seeds per image per
 
 ```
 DCS_PROJECT/
-├── IEEE_Conference_Paper_DeepJSCC_WZ.docx           # Camera-Ready 6-Page IEEE Conference Paper
-├── dcs_paper.docx                                   # Complete Academic Paper Deliverable
-├── DeepJSCC_WZ_Final_Project_Presentation.pptx      # 15-Slide Executive Defense Presentation
-├── Line_By_Line_Code_Explanation_Guide.docx         # Comprehensive Line-by-Line Code Guide
+├── README.md                                        # Complete Project & Empirical Documentation
+├── configs/                                         # Hydra Experiment Configurations
+│   └── experiment/
+│       └── wz/                                      # Configuration yamls for Baseline & SARG
 │
 ├── checkpoints/                                     # Trained Baseline Model Checkpoints
 │   ├── best_model.pth                               # 48-Epoch DeepJSCC-WZ Best Checkpoint
@@ -282,15 +282,17 @@ DCS_PROJECT/
 │
 ├── scripts/                                         # Execution, Training & Evaluation Scripts
 │   ├── 08_run_48_epochs.py                          # 48-Epoch Master Training Pipeline
-│   ├── evaluate_sarg_novelty_paired.py              # 8,400-Pass Paired Statistical Evaluation
-│   ├── generate_enhanced_publication_figures.py     # Generates 300 DPI Publication Figures
+│   ├── run_sarg_novelty_experiment.py               # 8,400-Pass Paired Statistical Evaluation
+│   ├── build_sarg_enhanced_visualizations.py        # Generates Publication Figures (with Inset & Differential Bars)
 │   └── run_demo.py                                  # Live 4-Panel Transmission Simulator
 │
 └── paper_evaluation_results/                        # Evaluation Tables, Curves & Demonstrations
+    ├── sarg_psnr_with_zoomed_inset.png              # Rate-Distortion with Hostile Fading Inset Zoom
+    ├── sarg_differential_gain_bars.png              # Empirical Differential Gain Bar Chart (+0.143 dB)
+    ├── sarg_learned_alpha_vs_snr.png                # Figure 4: SARG Learned Gate Weight vs SNR
+    ├── sarg_definitive_evidence_panel.png           # Master 3-Panel Composite Evidence Suite
     ├── authentic_kitti_train_vs_val_48_epochs.png   # Figure 1: 48-Epoch Loss & PSNR Convergence
     ├── authentic_kitti_training_comparison.png      # Figure 2: Multi-Metric Validation Progression
-    ├── sarg_learned_alpha_vs_snr.png                # Figure 4: SARG Learned Gate Weight vs SNR
-    ├── sarg_psnr_comparison_curves.png              # Figure 5: Rate-Distortion Degradation Curves
     ├── tables/
     │   ├── sarg_experiment_paired_results.csv       # Paired Evaluation Results (CSV)
     │   ├── sarg_experiment_paired_results.md        # Paired Evaluation Results (Markdown)
@@ -315,7 +317,7 @@ pip install torch torchvision numpy pandas matplotlib scipy pillow python-docx p
 ### 2. Verify Pre-Trained Checkpoints
 Evaluate both pre-trained 48-epoch checkpoints on held-out test scenes:
 ```powershell
-.\.venv\Scripts\python.exe scripts/evaluate_sarg_novelty_paired.py
+.\.venv\Scripts\python.exe scripts/run_sarg_novelty_experiment.py
 ```
 This executes the 8,400 forward evaluations (60 test scenes $\times$ 20 noise draws $\times$ 7 SNRs) and outputs the paired $t$-statistics and $p$-values.
 
