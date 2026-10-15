@@ -133,6 +133,15 @@ def main():
     plt.savefig(out_panel, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"  -> Visual panel saved to: {out_panel}")
+
+    # Automatically open image on screen in Windows
+    try:
+        abs_panel = os.path.abspath(out_panel)
+        print(f"  -> Automatically opening image on screen...")
+        os.startfile(abs_panel)
+    except Exception as e:
+        print(f"  -> (To view manually, open: {out_panel})")
+
     print("\nDEMO COMPLETED SUCCESSFULLY!")
 
 if __name__ == "__main__":

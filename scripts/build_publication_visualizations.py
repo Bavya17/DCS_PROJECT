@@ -259,6 +259,14 @@ def main():
     shutil.copy(fig2_path, os.path.join(artifact_dir, "sarg_differential_gain_bars.png"))
     shutil.copy(fig3_path, os.path.join(artifact_dir, "sarg_learned_alpha_vs_snr.png"))
     shutil.copy(fig4_path, os.path.join(artifact_dir, "sarg_definitive_evidence_panel.png"))
+
+    # Automatically open master evidence figure on screen
+    try:
+        print("  -> Automatically opening master novelty evidence panel on screen...")
+        os.startfile(os.path.abspath(fig4_path))
+    except Exception:
+        pass
+
     print("All figures successfully synchronized with artifact directory!")
 
 if __name__ == '__main__':

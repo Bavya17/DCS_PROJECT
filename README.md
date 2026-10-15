@@ -246,6 +246,7 @@ Evaluated over 60 test scenes $\times$ 20 fixed random noise seeds per image per
 DCS_PROJECT/
 ├── README.md                                        # Complete Project & Empirical Documentation
 ├── demo.py                                          # Live 4-Panel Wireless Transmission Demo Entrypoint
+├── show_results.py                                  # One-Click Windows Presentation & Results Viewer
 ├── evaluate.py                                      # Master Research Evaluation Suite Runner
 ├── reproduce.py                                     # One-Click Master Reproduction Runner
 ├── setup_environment.py                             # Pure-PyTorch Environment & Layer Package Setup
