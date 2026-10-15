@@ -50,15 +50,27 @@ def main():
     print("\n[2/3] AUTOMATICALLY OPENING PUBLICATION FIGURES ON SCREEN...")
     open_file_on_screen(
         "paper_evaluation_results/transmission_demo/sarg_visual_comparison_panel.png",
-        "Figure 1: 8-Panel Multi-SNR Qualitative Reconstruction Panel (Control vs. Proposed SARG)"
+        "Figure 1: 8-Panel Multi-SNR Qualitative Reconstruction (Control vs. Proposed SARG)"
     )
     open_file_on_screen(
-        "paper_evaluation_results/sarg_definitive_evidence_panel.png",
-        "Figure 2: Master Novelty Suite (Rate-Distortion Inset, Delta Gain Bars, Alpha vs SNR)"
+        "paper_evaluation_results/authentic_kitti_train_vs_val_48_epochs.png",
+        "Figure 2: 48-Epoch Convergence & Generalization Dynamics (Training vs. Val Loss & PSNR)"
     )
     open_file_on_screen(
         "paper_evaluation_results/authentic_kitti_training_comparison.png",
-        "Figure 3: 48-Epoch Multi-Metric Validation Progression Curves"
+        "Figure 3: Multi-Metric Validation Progression (PSNR, SSIM, LPIPS, MS-SSIM)"
+    )
+    open_file_on_screen(
+        "paper_evaluation_results/sarg_learned_alpha_vs_snr.png",
+        "Figure 4: Learned Gate Alpha vs. Channel SNR (Autonomous Noise Suppression)"
+    )
+    open_file_on_screen(
+        "paper_evaluation_results/sarg_psnr_comparison_curves.png",
+        "Figure 5: Rate-Distortion Performance & Severe Noise Immunity across Wireless SNRs"
+    )
+    open_file_on_screen(
+        "paper_evaluation_results/sarg_definitive_evidence_panel.png",
+        "Figure 6: Master Novelty Suite (Zoomed Inset, Delta Gain Bars, Alpha vs SNR)"
     )
 
     print("\n[3/3] ALL BENCHMARK FIGURES LOADED SUCCESSFULLY.")
