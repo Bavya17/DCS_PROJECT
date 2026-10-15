@@ -53,27 +53,27 @@ def main():
 
     # 1. Model Complexity Evaluation (Table I)
     print("\n>>> STAGE 1: Evaluating Model Complexity & Parameter Counts (Table I)")
-    mod_t1 = importlib.import_module("scripts.01_compute_model_complexity_table1")
+    mod_t1 = importlib.import_module("scripts.compute_model_complexity")
     mod_t1.compute_model_complexity_table1(output_dir=tables_dir)
 
     # 2. Rate-Distortion & Quality Metrics Curves (Figure 4)
     print("\n>>> STAGE 2: Plotting Rate-Distortion & Perceptual Quality Curves (Figure 4)")
-    mod_f4 = importlib.import_module("scripts.02_plot_rate_distortion_curves_fig4")
+    mod_f4 = importlib.import_module("scripts.plot_rate_distortion_curves")
     mod_f4.plot_rate_distortion_curves_fig4(results_dir="results", output_dir=output_dir)
 
     # 3. Comprehensive Performance Metrics Matrix
     print("\n>>> STAGE 3: Tabulating Full Numerical Performance Metrics")
-    mod_tbl = importlib.import_module("scripts.03_tabulate_performance_metrics")
+    mod_tbl = importlib.import_module("scripts.tabulate_paper_metrics")
     mod_tbl.tabulate_performance_metrics(results_dir="results", output_dir=tables_dir)
 
     # 4. Visual Reconstruction Comparison (Figure 3)
     print("\n>>> STAGE 4: Generating Visual Qualitative Reconstructions (Figure 3)")
-    mod_f3 = importlib.import_module("scripts.04_visual_reconstruction_comparison_fig3")
+    mod_f3 = importlib.import_module("scripts.generate_visual_reconstructions")
     mod_f3.generate_visual_comparison_fig3(assets_dir="assets", output_dir=output_dir)
 
     # 5. Live Transmission Pipeline Simulation on CPU
     print("\n>>> STAGE 5: Simulating Live DeepJSCC-WZ Forward Transmission Pipeline on CPU")
-    mod_demo = importlib.import_module("scripts.05_simulate_deepjscc_wz_transmission")
+    mod_demo = importlib.import_module("scripts.simulate_wireless_transmission")
     mod_demo.simulate_deepjscc_wz_transmission(snr_db=0.0, bw_factor=16, output_dir=demo_dir)
 
     total_time = time.time() - t_start

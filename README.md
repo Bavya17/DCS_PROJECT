@@ -245,6 +245,11 @@ Evaluated over 60 test scenes $\times$ 20 fixed random noise seeds per image per
 ```
 DCS_PROJECT/
 ├── README.md                                        # Complete Project & Empirical Documentation
+├── demo.py                                          # Live 4-Panel Wireless Transmission Demo Entrypoint
+├── evaluate.py                                      # Master Research Evaluation Suite Runner
+├── reproduce.py                                     # One-Click Master Reproduction Runner
+├── setup_environment.py                             # Pure-PyTorch Environment & Layer Package Setup
+├── requirements.txt                                 # Core Python Dependencies
 ├── configs/                                         # Hydra Experiment Configurations
 │   └── experiment/
 │       └── wz/                                      # Configuration yamls for Baseline & SARG
@@ -281,10 +286,13 @@ DCS_PROJECT/
 │       └── gdn.py                                   # [NOVELTY] Bounded Native-Tensor GDN/IGDN
 │
 ├── scripts/                                         # Execution, Training & Evaluation Scripts
-│   ├── 08_run_48_epochs.py                          # 48-Epoch Master Training Pipeline
-│   ├── run_sarg_novelty_experiment.py               # 8,400-Pass Paired Statistical Evaluation
-│   ├── build_sarg_enhanced_visualizations.py        # Generates Publication Figures (with Inset & Differential Bars)
-│   └── run_demo.py                                  # Live 4-Panel Transmission Simulator
+│   ├── train_model.py                               # 48-Epoch Master Training Pipeline
+│   ├── evaluate_sarg_novelty.py                     # 8,400-Pass Paired Statistical Evaluation
+│   ├── build_publication_visualizations.py          # Generates Publication Figures (with Inset & Differential Bars)
+│   ├── compute_model_complexity.py                  # Parameters & GFLOPs Profiler
+│   ├── plot_rate_distortion_curves.py               # Rate-Distortion & Quality Metrics Curves
+│   ├── tabulate_paper_metrics.py                    # Tabulates Metrics Across SNRs
+│   └── simulate_wireless_transmission.py            # Headless End-to-End Transmission Simulator
 │
 └── paper_evaluation_results/                        # Evaluation Tables, Curves & Demonstrations
     ├── sarg_psnr_with_zoomed_inset.png              # Rate-Distortion with Hostile Fading Inset Zoom
@@ -311,30 +319,31 @@ Create and activate a Python 3.10+ virtual environment:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install torch torchvision numpy pandas matplotlib scipy pillow python-docx python-pptx
+pip install torch torchvision numpy pandas matplotlib scipy pillow
+python setup_environment.py
 ```
 
 ### 2. Verify Pre-Trained Checkpoints
 Evaluate both pre-trained 48-epoch checkpoints on held-out test scenes:
 ```powershell
-.\.venv\Scripts\python.exe scripts/run_sarg_novelty_experiment.py
+.\.venv\Scripts\python.exe scripts/evaluate_sarg_novelty.py
 ```
 This executes the 8,400 forward evaluations (60 test scenes $\times$ 20 noise draws $\times$ 7 SNRs) and outputs the paired $t$-statistics and $p$-values.
 
 ### 3. Run Live Transmission Simulation
 Simulate live distributed stereo transmission over an AWGN channel ($\text{SNR} = 4.0\text{ dB}$, $\rho = 1/16$):
 ```powershell
-.\.venv\Scripts\python.exe run_demo.py
+.\.venv\Scripts\python.exe demo.py
 ```
 
 ### 4. Train from Scratch (48 Continuous Epochs on CPU)
 To train both the Control Baseline and SARG Novelty models from scratch on CPU:
 ```powershell
 # Train Control Baseline
-.\.venv\Scripts\python.exe scripts/08_run_48_epochs.py --config configs/experiment/wz/cpu_small_scale_baseline.yaml
+.\.venv\Scripts\python.exe scripts/train_model.py --config configs/experiment/wz/cpu_small_scale_baseline.yaml
 
 # Train Proposed SARG Model
-.\.venv\Scripts\python.exe scripts/08_run_48_epochs.py --config configs/experiment/wz/cpu_small_scale.yaml
+.\.venv\Scripts\python.exe scripts/train_model.py --config configs/experiment/wz/cpu_small_scale.yaml
 ```
 
 ---

@@ -24,7 +24,7 @@ pytest          # tests
 
 diffusers
 kornia
-# compressai (Use 'python setup_compressai_shim.py' on Windows to bypass MSVC C++ 14 requirement)
+# compressai (Use 'python setup_environment.py' on Windows to install pure-PyTorch layer package)
 torchmetrics[image]
 hydra-joblib-launcher
 scikit-learn
