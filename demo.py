@@ -20,6 +20,42 @@ def print_header(title):
     print(f" {title}")
     print("=" * 85)
 
+def safe_savefig(fig_or_plt, filepath, **kwargs):
+    """
+    Safely saves a figure to disk on Windows. If the target file is locked
+    by an active viewer application (e.g. Windows Photos), it automatically
+    falls back to an alternate filename so execution never crashes with OSError.
+    """
+    target = os.path.normpath(os.path.abspath(filepath))
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+
+    # Attempt 1: Canonical path
+    try:
+        fig_or_plt.savefig(target, **kwargs)
+        return target
+    except OSError as e:
+        print(f"  [!] Note: '{os.path.basename(target)}' is currently open in an image viewer.")
+
+    # Attempt 2: Latest fallback
+    base, ext = os.path.splitext(target)
+    fallback = f"{base}_latest{ext}"
+    try:
+        if os.path.exists(fallback):
+            try:
+                os.remove(fallback)
+            except OSError:
+                pass
+        fig_or_plt.savefig(fallback, **kwargs)
+        return fallback
+    except OSError:
+        pass
+
+    # Attempt 3: Timestamped path
+    ts = int(time.time())
+    ts_path = f"{base}_{ts}{ext}"
+    fig_or_plt.savefig(ts_path, **kwargs)
+    return ts_path
+
 def main():
     print_header("DEEPJSCC-WZ DISTRIBUTED WIRELESS STEREO VISION DEMO")
     print("Project: Edge-Efficient Deep Joint Source-Channel Coding with Wyner-Ziv Side Information")
@@ -130,17 +166,17 @@ def main():
     plt.tight_layout()
 
     out_panel = "paper_evaluation_results/transmission_demo/authentic_kitti_reconstruction_panel.png"
-    plt.savefig(out_panel, dpi=300, bbox_inches="tight")
+    saved_panel = safe_savefig(plt, out_panel, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"  -> Visual panel saved to: {out_panel}")
+    print(f"  -> Visual panel saved to: {saved_panel}")
 
     # Automatically open image on screen in Windows
     try:
-        abs_panel = os.path.abspath(out_panel)
+        abs_panel = os.path.abspath(saved_panel)
         print(f"  -> Automatically opening image on screen...")
         os.startfile(abs_panel)
     except Exception as e:
-        print(f"  -> (To view manually, open: {out_panel})")
+        print(f"  -> (To view manually, open: {saved_panel})")
 
     print("\nDEMO COMPLETED SUCCESSFULLY!")
 

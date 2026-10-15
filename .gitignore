@@ -43,3 +43,5 @@ Thumbs.db
 *.pdf
 scripts/build_review_materials.py
 scratch/
+*_latest.png
+

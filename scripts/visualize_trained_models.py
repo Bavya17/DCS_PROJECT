@@ -14,6 +14,25 @@ from src.models.components.power_constraints import ComplexAveragePowerConstrain
 from src.models.wz.deepjscc_wz_baseline2 import DeepJSCCWZBaseline2
 from src.models.wz.deepjscc_wz_baseline import DeepJSCCWZBaseline
 
+def safe_savefig(fig_or_plt, filepath, **kwargs):
+    """Safely saves a figure, gracefully handling Windows file locking by image viewers."""
+    target = os.path.normpath(os.path.abspath(filepath))
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+    try:
+        fig_or_plt.savefig(target, **kwargs)
+        return target
+    except OSError:
+        base, ext = os.path.splitext(target)
+        fallback = f"{base}_latest{ext}"
+        try:
+            fig_or_plt.savefig(fallback, **kwargs)
+            return fallback
+        except OSError:
+            import time
+            ts_path = f"{base}_{int(time.time())}{ext}"
+            fig_or_plt.savefig(ts_path, **kwargs)
+            return ts_path
+
 def main():
     print("=" * 80)
     print("VALIDATING 48-EPOCH CHECKPOINTS & GENERATING GENUINE RECONSTRUCTION")
@@ -107,16 +126,22 @@ def main():
     plt.tight_layout()
 
     out_panel = "paper_evaluation_results/transmission_demo/authentic_kitti_reconstruction_panel.png"
-    plt.savefig(out_panel, dpi=300, bbox_inches="tight")
+    saved_panel = safe_savefig(plt, out_panel, dpi=300, bbox_inches="tight")
     plt.close()
 
     # Save individual reconstructed frames
-    img_gt.save("paper_evaluation_results/transmission_demo/source_image_x.png")
-    img_xs.save("paper_evaluation_results/transmission_demo/decoder_side_information_xside.png")
-    img_base.save("paper_evaluation_results/transmission_demo/test_recon_baseline.png")
-    img_wz.save("paper_evaluation_results/transmission_demo/test_recon_deepjscc_wz.png")
+    for img, path in [
+        (img_gt, "paper_evaluation_results/transmission_demo/source_image_x.png"),
+        (img_xs, "paper_evaluation_results/transmission_demo/decoder_side_information_xside.png"),
+        (img_base, "paper_evaluation_results/transmission_demo/test_recon_baseline.png"),
+        (img_wz, "paper_evaluation_results/transmission_demo/test_recon_deepjscc_wz.png")
+    ]:
+        try:
+            img.save(path)
+        except OSError:
+            pass
 
-    print(f"\nSaved authentic reconstruction panel to:\n  - {out_panel}")
+    print(f"\nSaved authentic reconstruction panel to:\n  - {saved_panel}")
 
 if __name__ == "__main__":
     main()

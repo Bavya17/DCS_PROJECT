@@ -10,7 +10,16 @@ import sys
 import time
 
 def open_file_on_screen(filepath, description):
-    abs_path = os.path.abspath(filepath)
+    abs_path = os.path.normpath(os.path.abspath(filepath))
+    base, ext = os.path.splitext(abs_path)
+    latest_path = f"{base}_latest{ext}"
+    if os.path.exists(latest_path):
+        try:
+            if not os.path.exists(abs_path) or os.path.getmtime(latest_path) >= os.path.getmtime(abs_path):
+                abs_path = latest_path
+        except Exception:
+            pass
+
     if os.path.exists(abs_path):
         print(f"  [+] Opening {description}...")
         try:
