@@ -2,7 +2,6 @@
 
 > **Research Project & Official Repository**  
 > **Author**: Bavya Shree H and DCS Research Project Group  
-> **Affiliation**: Department of Electronics & Communication Engineering  
 > **Target Publication**: IEEE Transactions on Wireless Communications / Conference Proceedings  
 > **Dataset**: Authentic KITTI Stereo 2015 Benchmark (Zero-Leakage Geographic Sequence Split)  
 > **Deployment Profile**: Real-Time Edge-Optimized CPU Execution (Intel Core i5, 47 ms serial / 28.6 ms pipelined, >30 FPS)

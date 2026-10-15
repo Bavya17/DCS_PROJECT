@@ -32,8 +32,7 @@ def open_file_on_screen(filepath, description):
 
 def main():
     print("\n" + "=" * 85)
-    print("      DEEPJSCC-WZ + SARG: PRESENTATION & RESULTS VIEWER")
-    print("      Department of Electronics & Communication Engineering")
+    print("             DEEPJSCC-WZ + SARG: BENCHMARK & RESULTS VIEWER")
     print("=" * 85)
 
     print("\n[1/3] SUMMARY OF EMPIRICAL BENCHMARK METRICS (Authentic KITTI Stereo 2015)")
@@ -50,8 +49,8 @@ def main():
 
     print("\n[2/3] AUTOMATICALLY OPENING PUBLICATION FIGURES ON SCREEN...")
     open_file_on_screen(
-        "paper_evaluation_results/transmission_demo/authentic_kitti_reconstruction_panel.png",
-        "Figure 1: 4-Panel Photographic Visual Reconstruction (Source vs. Baseline vs. Proposed)"
+        "paper_evaluation_results/transmission_demo/sarg_visual_comparison_panel.png",
+        "Figure 1: 8-Panel Multi-SNR Qualitative Reconstruction Panel (Control vs. Proposed SARG)"
     )
     open_file_on_screen(
         "paper_evaluation_results/sarg_definitive_evidence_panel.png",
@@ -62,9 +61,7 @@ def main():
         "Figure 3: 48-Epoch Multi-Metric Validation Progression Curves"
     )
 
-    print("\n[3/3] ALL FIGURES ARE NOW OPEN ON YOUR SCREEN!")
-    print("=" * 85)
-    print("You can now walk your examiner/guide through the open windows.")
+    print("\n[3/3] ALL BENCHMARK FIGURES LOADED SUCCESSFULLY.")
     print("=" * 85 + "\n")
 
 if __name__ == "__main__":

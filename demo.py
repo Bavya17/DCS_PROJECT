@@ -170,13 +170,16 @@ def main():
     plt.close()
     print(f"  -> Visual panel saved to: {saved_panel}")
 
-    # Automatically open image on screen in Windows
+    # Automatically open the attached SARG qualitative reconstruction panel on screen in Windows
+    sarg_panel = "paper_evaluation_results/transmission_demo/sarg_visual_comparison_panel.png"
+    panel_to_open = sarg_panel if os.path.exists(sarg_panel) else saved_panel
+
     try:
-        abs_panel = os.path.abspath(saved_panel)
-        print(f"  -> Automatically opening image on screen...")
+        abs_panel = os.path.abspath(panel_to_open)
+        print(f"  -> Automatically opening image on screen ({os.path.basename(panel_to_open)})...")
         os.startfile(abs_panel)
     except Exception as e:
-        print(f"  -> (To view manually, open: {saved_panel})")
+        print(f"  -> (To view manually, open: {panel_to_open})")
 
     print("\nDEMO COMPLETED SUCCESSFULLY!")
 
